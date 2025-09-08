@@ -1,0 +1,49 @@
+程式啟動: 2025-09-08 16:31:00.536640
+Python版本: 3.12.4 | packaged by Anaconda, Inc. | (main, Jun 18 2024, 15:03:56) [MSC v.1929 64 bit (AMD64)]
+執行環境: Standard Python
+==================================================
+
+Windows fatal exception: code 0x80000003
+
+Current thread 0x000014cc (most recent call first):
+  Garbage-collecting
+  File "C:\ProgramData\anaconda3\Lib\xml\etree\ElementTree.py", line 1644 in _start
+  File "C:\ProgramData\anaconda3\Lib\xml\etree\ElementTree.py", line 1706 in feed
+  File "C:\ProgramData\anaconda3\Lib\xml\etree\ElementTree.py", line 1284 in feed
+  File "C:\ProgramData\anaconda3\Lib\xml\etree\ElementTree.py", line 1241 in iterator
+  File "C:\Users\kccheng\AppData\Roaming\Python\Python312\site-packages\openpyxl\worksheet\_reader.py", line 156 in parse
+  File "C:\Users\kccheng\AppData\Roaming\Python\Python312\site-packages\openpyxl\worksheet\_read_only.py", line 85 in _cells_by_row
+  File "C:\ProtDir\KCCHENG\watchdog_monitoring_v8\core\excel_parser.py", line 472 in dump_excel_cells_with_timeout
+  File "C:\ProtDir\KCCHENG\watchdog_monitoring_v8\core\comparison.py", line 294 in compare_excel_changes
+  File "C:\ProtDir\KCCHENG\watchdog_monitoring_v8\core\watcher.py", line 378 in on_modified
+  File "C:\Users\kccheng\AppData\Roaming\Python\Python312\site-packages\watchdog\events.py", line 217 in dispatch
+  File "C:\Users\kccheng\AppData\Roaming\Python\Python312\site-packages\watchdog\observers\api.py", line 391 in dispatch_events
+  File "C:\Users\kccheng\AppData\Roaming\Python\Python312\site-packages\watchdog\observers\api.py", line 213 in run
+  File "C:\ProgramData\anaconda3\Lib\threading.py", line 1073 in _bootstrap_inner
+  File "C:\ProgramData\anaconda3\Lib\threading.py", line 1030 in _bootstrap
+
+Thread 0x00002f50 (most recent call first):
+  File "C:\Users\kccheng\AppData\Roaming\Python\Python312\site-packages\watchdog\observers\winapi.py", line 326 in read_directory_changes
+  File "C:\Users\kccheng\AppData\Roaming\Python\Python312\site-packages\watchdog\observers\winapi.py", line 380 in read_events
+  File "C:\Users\kccheng\AppData\Roaming\Python\Python312\site-packages\watchdog\observers\read_directory_changes.py", line 67 in _read_events
+  File "C:\Users\kccheng\AppData\Roaming\Python\Python312\site-packages\watchdog\observers\read_directory_changes.py", line 70 in queue_events
+  File "C:\Users\kccheng\AppData\Roaming\Python\Python312\site-packages\watchdog\observers\api.py", line 158 in run
+  File "C:\ProgramData\anaconda3\Lib\threading.py", line 1073 in _bootstrap_inner
+  File "C:\ProgramData\anaconda3\Lib\threading.py", line 1030 in _bootstrap
+
+Thread 0x00003b78 (most recent call first):
+  File "C:\ProtDir\KCCHENG\watchdog_monitoring_v8\utils\helpers.py", line 198 in timeout_handler
+  File "C:\ProgramData\anaconda3\Lib\threading.py", line 1010 in run
+  File "C:\ProgramData\anaconda3\Lib\threading.py", line 1073 in _bootstrap_inner
+  File "C:\ProgramData\anaconda3\Lib\threading.py", line 1030 in _bootstrap
+
+Thread 0x00004188 (most recent call first):
+  File "C:\ProgramData\anaconda3\Lib\tkinter\__init__.py", line 1505 in mainloop
+  File "C:\ProtDir\KCCHENG\watchdog_monitoring_v8\ui\console.py", line 210 in run_window
+  File "C:\ProgramData\anaconda3\Lib\threading.py", line 1010 in run
+  File "C:\ProgramData\anaconda3\Lib\threading.py", line 1073 in _bootstrap_inner
+  File "C:\ProgramData\anaconda3\Lib\threading.py", line 1030 in _bootstrap
+
+Thread 0x00000710 (most recent call first):
+  File "C:\ProtDir\KCCHENG\watchdog_monitoring_v8\main.py", line 330 in main
+  File "C:\ProtDir\KCCHENG\watchdog_monitoring_v8\main.py", line 366 in <module>
