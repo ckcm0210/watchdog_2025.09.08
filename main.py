@@ -3,12 +3,22 @@ Excel Monitor 主執行檔案
 這是唯一需要執行的檔案
 """
 import os
+os.environ['OPENPYXL_LXML'] = 'True'  # Not sure is this help to solve 0x80000003 error
+
+import gc    # to deal woth 0x80000003 error
+gc.set_threshold(10000, 100, 100) # 極度保守的閾值, 發現程式於 python 3.8 時正常運作, 到python 3.11 3.12 時經常崩潰, 認為源於回收機制的不同
+
 import sys
 import signal
 import threading
 import time
 from datetime import datetime
 import logging
+
+import faulthandler
+import traceback
+import datetime
+
 
 # 導入增強版錯誤處理與日誌系統
 try:
@@ -330,4 +340,39 @@ def main():
         print("✅ 監控已停止")
 
 if __name__ == "__main__":
-    main()
+    log_directory = r"C:\temp\python_logs"
+    os.makedirs(log_directory, exist_ok=True)
+    
+    timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+    error_log = os.path.join(log_directory, f"python_crash_{timestamp}.log")
+    
+    try:
+        # 直接使用檔案，避免 sys.stderr 問題
+        with open(error_log, 'w', encoding='utf-8') as log_file:
+            # 寫入環境資訊
+            log_file.write(f"程式啟動: {datetime.datetime.now()}\n")
+            log_file.write(f"Python版本: {sys.version}\n")
+            log_file.write(f"執行環境: {'Jupyter' if 'ipykernel' in sys.modules else 'Standard Python'}\n")
+            log_file.write("=" * 50 + "\n\n")
+            log_file.flush()
+            
+            # 啟用 faulthandler 只輸出到檔案
+            faulthandler.enable(file=log_file, all_threads=True)
+            
+            print(f"faulthandler 已啟用")
+            print(f"錯誤記錄檔案: {error_log}")
+            
+            main()
+            
+    except Exception as e:
+        print(f"程式錯誤: {type(e).__name__}: {e}")
+        traceback.print_exc()
+        
+        # 追加錯誤到檔案
+        with open(error_log, 'a', encoding='utf-8') as f:
+            f.write(f"\nPython 例外錯誤:\n")
+            f.write(f"時間: {datetime.datetime.now()}\n")
+            f.write(f"錯誤: {type(e).__name__}: {e}\n")
+            traceback.print_exc(file=f)
+            
+        sys.exit(1)
