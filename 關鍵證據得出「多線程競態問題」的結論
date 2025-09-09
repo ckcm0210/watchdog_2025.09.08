@@ -1,0 +1,66 @@
+看過你的 log，確實是多線程競態問題
+邊句log 令你有呢個結論
+
+從你的 log 中，有幾個關鍵證據讓我得出「多線程競態問題」的結論：
+
+關鍵證據 1：多個活躍線程
+
+Thread 0x00000b9c (most recent call first):
+Thread 0x00002ee8 (most recent call first):  
+Thread 0x00004a4c (most recent call first):
+Thread 0x000001c0 (most recent call first):
+Thread 0x00001784 (most recent call first):
+Thread 0x0000242c (most recent call first):
+Thread 0x000016fc (most recent call first):
+Thread 0x000038e8 (most recent call first):
+Thread 0x000039fc (most recent call first):
+
+
+這行顯示程式同時有 9+ 個線程在運行，證實了這是多線程環境，不是單線程問題。
+
+關鍵證據 2：崩潰發生在垃圾回收
+
+Current thread 0x000021fc (most recent call first):
+Garbage-collecting
+
+「Garbage-collecting」崩潰是多線程競態的典型特徵：
+
+垃圾回收器嘗試清理某個對象
+
+但該對象正被另一個線程修改/使用
+
+導致記憶體結構corruption → fatal exception
+
+關鍵證據 3：ElementTree XML 解析崩潰
+
+File "C:\ProgramData\anaconda3\Lib\xml\etree\ElementTree.py", line 1335 in XML
+
+以及
+
+File "C:\Users\kccheng\AppData\Roaming\Python\Python311\site-packages\openpyxl\descriptors\serialisable.py", line 73 in from_tree
+
+ElementTree 不是線程安全的，在多線程環境下解析 XML（Excel 內部是 XML 格式）會出現競態條件。
+
+關鍵證據 4：watchdog 觸發路徑
+
+
+File "C:\ProtDir\KCCHENG\watchdog_monitoring_v9\core\watcher.py", line 388 in on_modified
+
+
+watchdog 會為每個文件事件創建新線程，所以一個文件變更可能觸發多個線程同時處理相同或不同的 Excel 文件。
+
+關鍵證據 5：相同模式在兩個 Python 版本重現
+Python 3.12.4：Windows fatal exception: code 0x80000003
+
+Python 3.11.3：Windows fatal exception: code 0x80000003
+
+同樣錯誤在不同版本都出現，說明這是 ElementTree 多線程使用的根本問題，不是特定版本的 bug。
+
+最決定性的證據：線程數量 vs 處理能力
+從你的描述「連續數十次成功 → 重啟後連續失敗」，配合 log 顯示的9+ 個同時線程，這正是多線程競態的經典表現：
+
+成功時：線程執行時序剛好錯開，沒有衝突
+
+失敗時：多個線程同時訪問 ElementTree，觸發競態條件
+
+總結：log 中的「多個線程ID + Garbage-collecting崩潰 + ElementTree路徑 + watchdog觸發」這個組合，是多線程競態問題的標準指紋。
